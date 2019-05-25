@@ -16,13 +16,9 @@
               
 SoftwareSerial HC12(10, 11);
 
-int lr,x,y;
 int bf, motor1_speed, motor2_speed;
 int mode;
 String input;
-int boundLow;
-int boundHigh;
-const char delimiter = ',';
 
 void setup() {
 
@@ -44,37 +40,22 @@ pinMode (6, OUTPUT);
 pinMode (7, OUTPUT);
 }
 
-void loop() {
+void loop() 
+{
 
   if(HC12.available())
   {
   input = HC12.readStringUntil('\n');
   if (input.length() > 0)
       {
-        Serial.println(input);
-       
-       boundLow = input.indexOf(delimiter);
-        x = input.substring(0, boundLow).toInt();
-    
-        boundHigh = input.indexOf(delimiter, boundLow+1);
-        y = input.substring(boundLow+1, boundHigh).toInt();
-    
-        boundLow = input.indexOf(delimiter, boundHigh+1);
-        bf = input.substring(boundHigh+1, boundLow).toInt();
-
-        boundHigh = input.indexOf(delimiter, boundLow+1);
-        lr = input.substring(boundLow+1, boundHigh).toInt();
-    
-        mode = input.substring(boundHigh+1).toInt();
-  
-delay(10);   
-}
+        Serial.println(input);  
+      }
 //Robot Movement
-low_speed(); //Comment this line and uncomment the next line for high speed
-//high_speed(); 
+low_speed(); 
 }
 }
 
+//Functions
 void forward()
 {
 motor1_speed=100;
@@ -101,32 +82,6 @@ digitalWrite(MOTOR_B2_PIN, HIGH);
 Serial.println("Moving Forward");
 }
 
-void fforward()
-{
-motor1_speed=255;
-motor2_speed=255;
-analogWrite(PWM_MOTOR_1, motor1_speed);
-analogWrite(PWM_MOTOR_2, motor2_speed);
-digitalWrite(MOTOR_A1_PIN, HIGH); 
-digitalWrite(MOTOR_B1_PIN, LOW);
-digitalWrite(MOTOR_A2_PIN, HIGH); 
-digitalWrite(MOTOR_B2_PIN, LOW);
-Serial.println("Moving Forward");
-}
-
-void fbackward()
-{
-motor1_speed=255;
-motor2_speed=255;
-analogWrite(PWM_MOTOR_1, motor1_speed);
-analogWrite(PWM_MOTOR_2, motor2_speed);
-digitalWrite(MOTOR_A1_PIN, LOW); 
-digitalWrite(MOTOR_B1_PIN, HIGH);
-digitalWrite(MOTOR_A2_PIN, LOW); 
-digitalWrite(MOTOR_B2_PIN, HIGH);
-Serial.println("Moving Backward");
-}
-
 void stop()
 {
 motor1_speed=0;
@@ -140,30 +95,32 @@ digitalWrite(MOTOR_B2_PIN, LOW);
 Serial.println("Stop");
 }
 
-void ffrontright()
+
+void left()
 {
-motor1_speed=255;
-motor2_speed=50;
+motor1_speed=100;
+motor2_speed=100;
 analogWrite(PWM_MOTOR_1, motor1_speed);
 analogWrite(PWM_MOTOR_2, motor2_speed);
 digitalWrite(MOTOR_A1_PIN, HIGH); 
 digitalWrite(MOTOR_B1_PIN, LOW);
-digitalWrite(MOTOR_A2_PIN, HIGH); 
-digitalWrite(MOTOR_B2_PIN, LOW);
-Serial.println("Front Right");
+digitalWrite(MOTOR_A2_PIN, LOW); 
+digitalWrite(MOTOR_B2_PIN, HIGH);
+Serial.println("Moving Left");
 }
 
-void ffrontleft()
+
+void right()
 {
-motor1_speed=50;
-motor2_speed=255;
+motor1_speed=100;
+motor2_speed=100;
 analogWrite(PWM_MOTOR_1, motor1_speed);
 analogWrite(PWM_MOTOR_2, motor2_speed);
-digitalWrite(MOTOR_A1_PIN, HIGH); 
-digitalWrite(MOTOR_B1_PIN, LOW);
+digitalWrite(MOTOR_A1_PIN, LOW); 
+digitalWrite(MOTOR_B1_PIN, HIGH);
 digitalWrite(MOTOR_A2_PIN, HIGH); 
 digitalWrite(MOTOR_B2_PIN, LOW);
-Serial.println("Front Left");
+Serial.println("Moving Right");
 }
 
 void frontright()
@@ -175,7 +132,7 @@ analogWrite(PWM_MOTOR_2, motor2_speed);
 digitalWrite(MOTOR_A1_PIN, HIGH); 
 digitalWrite(MOTOR_B1_PIN, LOW);
 digitalWrite(MOTOR_A2_PIN, HIGH); 
-digitalWrite(MOTOR_B2_PIN, LOW);
+digitalWrite(MOTOR_B2_PIN, HIGH);
 Serial.println("Front Right");
 }
 
@@ -186,89 +143,46 @@ motor2_speed=150;
 analogWrite(PWM_MOTOR_1, motor1_speed);
 analogWrite(PWM_MOTOR_2, motor2_speed);
 digitalWrite(MOTOR_A1_PIN, HIGH); 
-digitalWrite(MOTOR_B1_PIN, LOW);
+digitalWrite(MOTOR_B1_PIN, HIGH);
 digitalWrite(MOTOR_A2_PIN, HIGH); 
 digitalWrite(MOTOR_B2_PIN, LOW);
 Serial.println("Front Left");
 }
 
-
-
 void low_speed()
 {
  
-  if ((bf <= 100) && (lr > 100) && (lr < 700))
+if (input == "Backward")
 {
 backward();
 }
  
-else if ((bf >= 700) && (lr > 100) && (lr < 700))
+else if (input == "Forward")
 {
 forward();
 }
 
-else if ((lr <= 100) && (bf > 100) && (bf < 700))
+else if (input == "Clockwise")
 {
 right();
 }
  
-else if ((lr >= 700) && (bf > 100) && (bf < 700))
+else if (input == "anti-clockwise")
 {
 left();
 }
 
-else if ((lr <= 100) && (bf >= 700))
+else if (input == "Left")
 {
 frontleft();
 }
  
-else if ((lr >= 700) && (bf >= 700))
+else if (input == "Right")
 {
 frontright();
 }
  
-}
-
-
-
-void high_speed()
-{
- 
-if ((bf <= 100) && (lr > 100) && (lr < 700))
-{
-fbackward();
-}
- 
-else if ((bf >= 700) && (lr > 100) && (lr < 700))
-{
-fforward();
-}
-
-
-else if ((lr <= 100) && (bf > 100) && (bf < 700))
-{
-right();
-}
- 
-else if ((lr >= 700) && (bf > 100) && (bf < 700))
-{
-left();
-}
-
-
-else if ((lr <= 100) && (bf >= 700))
-{
-ffrontleft();
-}
- 
-else if ((lr >= 700) && (bf >= 700))
-{
-ffrontright();
-}
- 
-else
-{
-stop();
-}
+ else
+ stop();
 }
 
